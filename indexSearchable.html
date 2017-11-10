@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+  <script type="text/javascript">
+    $(document).keypress(
+      function(event){
+        if(event.which === '13') {
+          event.preventDefault();
+        }
+    });
+  </script>
+</head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-6">
+            <div class="navbar-header">
+              <a class="navbar-brand navbar-left" href="#">KING(DOM)</a>
+            </div>
+          </div>
+          <div class="col-xs-6">
+            <div class="navbar-right">
+              <p class="navbar-text">Kevin's Internet Noise Garage (Database Of Music)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid" style="padding:50px 250px;">
+      <form role = "form">
+        <div class="form-group">
+          <h1>Search for an artist, album, or by genre</h1>
+          <input type ="input" class="form-control input-lg" id="txt-search" placeholder="Type your search here">
+        </div>
+      </form>
+    <div class="container-fluid" id="filter-records"></div>
+  </div>
+  <footer>
+    <script type="text/javascript">
+      var mySpreadsheet = 'https://docs.google.com/spreadsheets/d/1yopIXkbR-n2RN7KEOkkeidSPDQETZHbE6h2pUrP-Xd8/edit?usp=sharing';
+
+      Tabletop.init( { key: mySpreadsheet,
+                     callback: loadInfo,
+                     simpleSheet: true } )
+
+     function loadInfo(data, tabletop) {
+      console.log(data);
+      $('#txt-search').keyup(function(){
+        var searchField = $(this).val();
+        if(searchField === '') {
+          $('#filter-records').html('');
+          return;
+        }
+          var regex = new RegExp(searchField, "i");
+          var output = '<div class="row">';
+          var count = 1;
+          $.each(data, function(key, val){
+            if((val.artist.search(regex) != -1) || (val.album.search(regex) != -1) || (val.genre.search(regex) != -1)) {
+              output += '<div>';
+              output += '<div class="col-md-3"><img class="img-responsive" src="'+val.albumartlink+'" alt="'+ val.artist +'" /></div>';
+              output += '<div class="col-md-7">';
+              output += '<h3>' + val.artist + '</h3>';
+              output += '<p>' + val.album + ' | ' + val.genre +'</p>';
+              output += '<p>Standout tracks: ' + val.StandoutTracks + '</p>';
+              output += '<p>Rating: ';
+              for(i=0; i < val.rating; i++){
+                output += '<span class="glyphicon glyphicon-fire"></span>';
+              }
+              output += '</p>';
+              output += '<hr>';
+              output += '<h5>First Impressions:</h5>';
+              output += '<p>' + val.FirstImpressions + '</p>';
+              output += '</div>';
+              output += '</div>';
+              if(count%2 == 0){
+                output += '</div><div class="row">';
+              }
+              count++;
+            }
+          });
+          output += '</div>';
+          $('#filter-records').html(output);
+      });
+    }
+    </script>
+  </footer>
+  </body>
+</html>
